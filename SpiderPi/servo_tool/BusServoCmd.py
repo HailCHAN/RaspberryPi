@@ -5,7 +5,8 @@ import sys
 import time
 import ctypes
 import serial
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+from gpiozero import DigitalOutputDevice
 
 LOBOT_SERVO_FRAME_HEADER         = 0x55
 LOBOT_SERVO_MOVE_TIME_WRITE      = 1
@@ -37,39 +38,65 @@ LOBOT_SERVO_LED_CTRL_READ        = 34
 LOBOT_SERVO_LED_ERROR_WRITE      = 35
 LOBOT_SERVO_LED_ERROR_READ       = 36
 
-serialHandle = serial.Serial("/dev/ttyAMA0", 115200)  # 初始化串口， 波特率为115200
+serialHandle = serial.Serial("/dev/ttyAMA10", 115200)  # 初始化串口， 波特率为115200
 
-rx_pin = 7
-tx_pin = 13
+rx_pin = 10
+tx_pin = 8
 
-mode = GPIO.getmode()
-if mode == 1 or mode is None:  # 是否已经设置引脚编码
-    GPIO.setmode(GPIO.BOARD)  # 设为BCM编码
-GPIO.setwarnings(False)
+rx_pin_device = DigitalOutputDevice(rx_pin)
+rx_pin_device.off()
 
-def portInit():  # 配置用到的IO口
-    GPIO.setup(rx_pin, GPIO.OUT)  # 配置RX_CON 即 GPIO17 为输出
-    GPIO.output(rx_pin, 0)
-    GPIO.setup(tx_pin, GPIO.OUT)  # 配置TX_CON 即 GPIO27 为输出
-    GPIO.output(tx_pin, 1)
+tx_pin_device = DigitalOutputDevice(tx_pin)
+tx_pin_device.on()
 
-portInit()
+def portInit():
+    pass  # Initialization already done above
 
-def portWrite():  # 配置单线串口为输出
-    GPIO.output(tx_pin, 1)  # 拉高TX_CON 即 GPIO27
-    GPIO.output(rx_pin, 0)  # 拉低RX_CON 即 GPIO17
+def portWrite():
+    tx_pin_device.on()
+    rx_pin_device.off()
 
-def portRead():  # 配置单线串口为输入
-    GPIO.output(rx_pin, 1)  # 拉高RX_CON 即 GPIO17
-    GPIO.output(tx_pin, 0)  # 拉低TX_CON 即 GPIO27
+def portRead():
+    rx_pin_device.on()
+    tx_pin_device.off()
 
 def portRest():
     time.sleep(0.1)
     serialHandle.close()
-    GPIO.output(rx_pin, 1)
-    GPIO.output(tx_pin, 1)
+    rx_pin_device.on()
+    tx_pin_device.on()
     serialHandle.open()
     time.sleep(0.1)
+
+
+#mode = GPIO.getmode()
+#if mode == 1 or mode is None:  # 是否已经设置引脚编码
+#    GPIO.setmode(GPIO.BOARD)  # 设为BCM编码
+#GPIO.setwarnings(False)
+#
+#def portInit():  # 配置用到的IO口
+#    GPIO.setup(rx_pin, GPIO.OUT)  # 配置RX_CON 即 GPIO17 为输出
+#    GPIO.output(rx_pin, 0)
+#    GPIO.setup(tx_pin, GPIO.OUT)  # 配置TX_CON 即 GPIO27 为输出
+#    GPIO.output(tx_pin, 1)
+#
+#portInit()
+#
+#def portWrite():  # 配置单线串口为输出
+#    GPIO.output(tx_pin, 1)  # 拉高TX_CON 即 GPIO27
+#    GPIO.output(rx_pin, 0)  # 拉低RX_CON 即 GPIO17
+#
+#def portRead():  # 配置单线串口为输入
+#    GPIO.output(rx_pin, 1)  # 拉高RX_CON 即 GPIO17
+#    GPIO.output(tx_pin, 0)  # 拉低TX_CON 即 GPIO27
+#
+#def portRest():
+#    time.sleep(0.1)
+#    serialHandle.close()
+#    GPIO.output(rx_pin, 1)
+#    GPIO.output(tx_pin, 1)
+#    serialHandle.open()
+#    time.sleep(0.1)
 
 def checksum(buf):
     # 计算校验和
@@ -79,6 +106,8 @@ def checksum(buf):
     sum = sum - 0x55 - 0x55  # 去掉命令开头的两个 0x55
     sum = ~sum  # 取反
     return sum & 0xff
+
+
 
 def serial_serro_wirte_cmd(id=None, w_cmd=None, dat1=None, dat2=None):
     '''

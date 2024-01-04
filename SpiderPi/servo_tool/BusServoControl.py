@@ -2,7 +2,7 @@
 import os
 import sys
 import time
-import RPi.GPIO as GPIO
+from gpiozero import DigitalOutputDevice
 from BusServoCmd import *
 from smbus2 import SMBus, i2c_msg
 
@@ -25,7 +25,7 @@ def getBusServoID(id=None):
     :param id: 默认为空
     :return: 返回舵机id
     """
-    
+
     while True:
         if id is None:  # 总线上只能有一个舵机
             serial_servo_read_cmd(0xfe, LOBOT_SERVO_ID_READ)
@@ -108,7 +108,7 @@ def getBusServoAngleLimit(id):
     :param id:
     :return: 返回元祖 0： 低位  1： 高位
     '''
-    
+
     while True:
         serial_servo_read_cmd(id, LOBOT_SERVO_ANGLE_LIMIT_READ)
         msg = serial_servo_get_rmsg(LOBOT_SERVO_ANGLE_LIMIT_READ)
@@ -153,7 +153,7 @@ def getBusServoTempLimit(id):
     :param id:
     :return:
     '''
-    
+
     while True:
         serial_servo_read_cmd(id, LOBOT_SERVO_TEMP_MAX_LIMIT_READ)
         msg = serial_servo_get_rmsg(LOBOT_SERVO_TEMP_MAX_LIMIT_READ)

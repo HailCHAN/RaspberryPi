@@ -11,7 +11,7 @@ def setServoPulse(id, pulse, use_time):
 
 def setServoDeviation(id ,dev):
     setBusServoDeviation(id, dev)
-    
+
 def saveServoDeviation(id):
     saveBusServoDeviation(id)
 
