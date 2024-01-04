@@ -40,8 +40,8 @@ LOBOT_SERVO_LED_ERROR_READ       = 36
 
 serialHandle = serial.Serial("/dev/ttyAMA10", 115200)  # 初始化串口， 波特率为115200
 
-rx_pin = 10
-tx_pin = 8
+rx_pin = 16
+tx_pin = 18
 
 rx_pin_device = DigitalOutputDevice(rx_pin)
 rx_pin_device.off()

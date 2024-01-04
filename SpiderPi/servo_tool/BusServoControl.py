@@ -9,7 +9,7 @@ from smbus2 import SMBus, i2c_msg
 #幻尔科技raspberrypi扩展板sdk#
 if sys.version_info.major == 2:
     print('Please run this program with python3!')
-    sys.exit(0)
+    sys.exit(0)     
 
 def setBusServoID(oldid, newid):
     """
@@ -34,6 +34,7 @@ def getBusServoID(id=None):
         # 获取内容
         msg = serial_servo_get_rmsg(LOBOT_SERVO_ID_READ)
         if msg is not None:
+            print("ServoID:",msg)
             return msg
 
 def setBusServoPulse(id, pulse, use_time):
