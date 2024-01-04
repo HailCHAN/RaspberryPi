@@ -27,6 +27,7 @@ def getBusServoID(id=None):
     """
 
     while True:
+        print("ID:",id)
         if id is None:  # 总线上只能有一个舵机
             serial_servo_read_cmd(0xfe, LOBOT_SERVO_ID_READ)
         else:
