@@ -49,6 +49,8 @@ rx_pin_device.off()
 tx_pin_device = DigitalOutputDevice(tx_pin)
 tx_pin_device.on()
 
+print("Start init serial")
+
 def portInit():
     pass  # Initialization already done above
 
@@ -68,6 +70,7 @@ def portRest():
     serialHandle.open()
     time.sleep(0.1)
 
+print("Finish init serial")
 
 #mode = GPIO.getmode()
 #if mode == 1 or mode is None:  # 是否已经设置引脚编码
